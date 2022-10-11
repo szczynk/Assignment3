@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Water and Wind Weather</title>
+    <link rel="stylesheet" href="/static/index.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div id="weather_wrapper">
+      <div class="weatherCard">
+        <div class="currentStatus">
+          <img src="/static/monas.svg" alt="Monas" width="200px"/>
+          <text class="status">szczynk</text>
+        </div>
+        <div class="currentWeather">
+          <text id="water" class="water"></text>
+          <text id="waterStat"></text>
+          <text></text>
+          <text id="wind" class="wind"></text> 
+          <text id="windStat"></text>
+        </div>
+      </div>
+    </div>
+    <script>
+      function fetchdata(){
+        $.ajax({
+          url: "/status",
+          type: "get",
+          success: function(data){
+            document.getElementById("water").innerHTML = data.water + " m"
+            document.getElementById("wind").innerHTML = data.wind + " m/s"
+            document.getElementById("waterStat").innerHTML = data.waterStat
+            document.getElementById("windStat").innerHTML = data.windStat
+          },
+          complete: function(data){
+            setTimeout(fetchdata,5000);
+          }
+        });
+      }
+
+      $(document).ready(function(){
+        setTimeout(fetchdata,5000);
+      });
+    </script>
+</html>
