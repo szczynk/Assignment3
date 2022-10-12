@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
@@ -25,38 +26,37 @@ var (
 )
 
 func main() {
-	// wg := &sync.WaitGroup{}
-	tick := time.NewTicker(time.Second * 5)
-
-	go func(tick *time.Ticker) {
+	go func() {
 		for {
-			<-time.After(5 * time.Second)
+			<-time.After(15 * time.Second)
 			func() {
 				fi, err = os.ReadFile("status.json")
 				Check(err)
-				// fmt.Printf("%v, %T \n", string(fi), string(fi))
 
-				// var di Weather
 				// json --> struct
 				err = json.Unmarshal(fi, &di)
 				Check(err)
-				// fmt.Printf("%+v, %T \n", di, di)
 
 				di.Randomize()
 
 				// struct --> json
 				do, err = json.MarshalIndent(di, "", "  ")
 				Check(err)
-				// fmt.Printf("%v, %T \n", string(do), string(do))
 
 				// write output file with 52 bytes
 				err = os.WriteFile("status.json", do, 0644)
 				Check(err)
 			}()
-			// fmt.Printf("%+v, %T \n", di, di)
-			// fmt.Printf("%v, %T \n", string(do), string(do))
+
+			fmt.Printf(
+				"water : %d m   - %s \nwind  : %d m/s - %s \n",
+				di.Status.Water,
+				StatusWater(di.Status.Water),
+				di.Status.Wind,
+				StatusWind(di.Status.Wind),
+			)
 		}
-	}(tick)
+	}()
 
 	routers := gin.Default()
 	routers.LoadHTMLGlob("templates/*.html")
@@ -107,10 +107,6 @@ func StatusWind(wind int) string {
 		windStat = "Bahaya"
 	}
 	return windStat
-}
-
-func chWeatherOut(ch <-chan Weather) Weather {
-	return <-ch
 }
 
 func Check(e error) {
