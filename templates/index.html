@@ -5,7 +5,6 @@
     <title>Water and Wind Weather</title>
     <link rel="stylesheet" href="/static/index.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
-    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
   </head>
   <body>
     <div id="weather_wrapper">
@@ -24,24 +23,22 @@
       </div>
     </div>
     <script>
-      function fetchdata(){
-        $.ajax({
-          url: "/status",
-          type: "get",
-          success: function(data){
+      document.addEventListener("DOMContentLoaded", () => {
+        setInterval(async function () {
+          const response = await fetch("status", {
+            method: "GET",
+          });
+          try {
+            const data = await response.json();
             document.getElementById("water").innerHTML = data.water + " m"
             document.getElementById("wind").innerHTML = data.wind + " m/s"
             document.getElementById("waterStat").innerHTML = data.waterStat
             document.getElementById("windStat").innerHTML = data.windStat
-          },
-          complete: function(data){
-            setTimeout(fetchdata,15000);
+          } catch (err) {
+            console.log("error: ", err);
           }
-        });
-      }
-
-      $(document).ready(function(){
-        setTimeout(fetchdata,15000);
-      });
+        }, 15000);
+      })
     </script>
+  </body>
 </html>
